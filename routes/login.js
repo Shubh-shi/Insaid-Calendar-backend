@@ -12,7 +12,7 @@ router.post("/", (req, res)=> {
   db.getConnection ( async (err, connection)=> {
    if 
    (err) throw (err)
-   const sqlSearch = "SELECT ue.id,ue.program_id,ue.category FROM `users` As us JOIN user_enrolments AS ue ON us.id=ue.user_id WHERE us.email=?"
+   const sqlSearch = "SELECT ue.id,ue.program_id,ue.user_id,ue.category FROM `users` As us JOIN user_enrolments AS ue ON us.id=ue.user_id WHERE us.email=?"
    const search_query = mysql.format(sqlSearch,[email])
   //  console.log(search_query);
    await connection.query (search_query, async (err, result) => {
@@ -27,7 +27,7 @@ router.post("/", (req, res)=> {
     else{
        if(result.length==1)
       {
-        res.json({ enrol_id:result[0].id,count:result.length,category: result[0].category,program_id:result[0].program_id});
+        res.json({ enrol_id:result[0].id,count:result.length,category: result[0].category,program_id:result[0].program_id,user_id:result[0].user_id});
       }else{
       res.json({count:result.length});
       }
@@ -43,7 +43,7 @@ router.post("/fetchinfo", (req, res)=> {
    (err) throw (err)
    const sqlSearch = "SELECT ue.id,ue.user_id,ue.program_id,ue.category FROM `users` As us JOIN user_enrolments AS ue ON us.id=ue.user_id WHERE us.email=?"
    const search_query = mysql.format(sqlSearch,[email])
-  //  console.log(search_query);
+   console.log(search_query);
    await connection.query (search_query, async (err, result) => {
     // connection.release()
     
@@ -59,7 +59,9 @@ router.post("/fetchinfo", (req, res)=> {
       for(i=0;i<result.length;i++)
       {
         enrol[i]={"enrol_id":result[i].id,"program_id":result[i].program_id,"category":result[i].category,"user_id":result[i].user_id,count:result.length};
+       //  console.log(search_query);
       }
+      
       res.json(enrol);
     }
    }) //end of connection.query()
